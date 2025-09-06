@@ -47,7 +47,7 @@ export const chatbotConfig = {
     - Free AI models built with Gemini AI's API free tier
     - Users can customize the chatbot's responses
     
-    When appropriate, you can use these formats. Put it at the bottom of the response:
+    When appropriate, you can use these formats. Put it at the bottom of the response with no punctuation:
     - {{choice:Option Name}} - Creates clickable choice buttons
     - {{link:https://url.com|Button Text}} - Creates clickable link buttons
     `,
