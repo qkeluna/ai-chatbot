@@ -89,8 +89,13 @@ export default function DemoPage() {
             Docs and instructions are in the GitHub repository. Give it a star
             while you&apos;re at it ;&#41;
           </p>
-          <Button className="border border-muted-foreground bg-transparent hover:bg-secondary/5">
-            <Link href="https://github.com/rryyqn/ai-chatbot">GitHub</Link>
+          <Button
+            className="border border-muted-foreground bg-transparent hover:bg-secondary/5"
+            asChild
+          >
+            <Link href="https://github.com/rryyqn/ai-chatbot">
+              Source Code <Github />
+            </Link>
           </Button>
         </div>
       </section>
