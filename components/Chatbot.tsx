@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useChat } from "@ai-sdk/react";
 import {
   Conversation,
@@ -28,6 +28,21 @@ type ErrorMessage = {
 
 const ChatBotWrapper = () => {
   const [isOpen, setIsOpen] = useState(false);
+  // Lock background scroll when chat is open (iOS-friendly)
+  useEffect(() => {
+    if (!isOpen) return;
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevBodyPosition = document.body.style.position;
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    return () => {
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      document.body.style.overflow = prevBodyOverflow;
+      document.body.style.position = prevBodyPosition;
+    };
+  }, [isOpen]);
   return (
     <div className="">
       <Button
@@ -169,8 +184,8 @@ export const ChatBot = ({ onClose }: { onClose: () => void }) => {
       transition={{ type: "spring", stiffness: 500, damping: 30 }}
       className={`
             justify-between flex flex-col
-            fixed z-20 bg-white 
-            inset-0 w-screen h-screen rounded-none border-0
+            fixed z-20 bg-white overscroll-contain touch-pan-y
+            inset-0 w-screen h-[100dvh] rounded-none border-0
             md:max-w-100 md:w-full md:h-110 md:bottom-20 md:right-4 md:rounded-sm md:border md:inset-auto
           `}
     >
@@ -192,8 +207,8 @@ export const ChatBot = ({ onClose }: { onClose: () => void }) => {
           </Button>
         </div>
       </div>
-      <Conversation className="overflow-hidden">
-        <ConversationContent className="px-2">
+      <Conversation className="overflow-hidden flex-1">
+        <ConversationContent className="px-2 pb-[calc(env(safe-area-inset-bottom)+72px)]">
           {messages.map((message) => (
             <div key={message.id}>
               <Message from={message.role} key={message.id}>
@@ -237,7 +252,7 @@ export const ChatBot = ({ onClose }: { onClose: () => void }) => {
       </Conversation>
       <PromptInput
         onSubmit={handleSubmit}
-        className="flex items-center py-3 px-4 gap-2 border-t"
+        className="sticky flex items-center bottom-0 left-0 right-0 bg-white py-3 px-4 gap-2 border-t"
       >
         <PromptInputTextarea
           onChange={(e) => setInput(e.target.value)}
