@@ -29,7 +29,7 @@ type ErrorMessage = {
 const ChatBotWrapper = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Locks background page scroll when chat is open
+  // Locks background page scroll when chat is open on mobile
   const isMobile = () => {
     return window.innerWidth < 768;
   };
@@ -51,7 +51,7 @@ const ChatBotWrapper = () => {
     };
   }, [isOpen]);
   return (
-    <div className="">
+    <div>
       <Button
         size="sm"
         className="fixed bottom-5 right-5 rounded-full p-4 h-fit"
@@ -65,7 +65,6 @@ const ChatBotWrapper = () => {
     </div>
   );
 };
-
 export default ChatBotWrapper;
 
 export const ChatBot = ({ onClose }: { onClose: () => void }) => {
@@ -173,7 +172,6 @@ export const ChatBot = ({ onClose }: { onClose: () => void }) => {
     ]);
   };
 
-  // Format countdown message
   const getRateLimitMessage = () => {
     if (rateLimitCountdown !== null && rateLimitCountdown > 0) {
       return `Rate limit exceeded. Please wait ${rateLimitCountdown} second${
@@ -201,14 +199,17 @@ export const ChatBot = ({ onClose }: { onClose: () => void }) => {
           {getRateLimitMessage()}
         </div>
       )}
-      <div className="px-2 py-2 flex flex-row justify-between items-center">
+      {/* Chat Top Bar */}
+      <div className="p-2 flex flex-row justify-between items-center">
         <div className="flex-col pl-2">
           <p className="font-bold text-xl">{chatbotConfig.ui.windowTitle}</p>
         </div>
         <div>
+          {/* Reset Button */}
           <Button onClick={clearMessages} size="icon" variant="ghost">
             <RotateCw />
           </Button>
+          {/* Close Chat Button */}
           <Button onClick={onClose} size="icon" variant="ghost">
             <X />
           </Button>
@@ -244,6 +245,7 @@ export const ChatBot = ({ onClose }: { onClose: () => void }) => {
           ))}
           {status === "submitted" && (
             <Message role="assistant" from="assistant">
+              {/* Loading Message */}
               <MessageContent>
                 <div className="flex gap-1 justify-center items-center py-2 px-1">
                   <span className="sr-only">Loading...</span>
@@ -323,6 +325,7 @@ const MarkdownWithButtons = ({
       </div>
       {(conversationChoices.length > 0 || linkButtons.length > 0) && (
         <div className="flex flex-row flex-wrap mt-2 gap-2">
+          {/* Render conversation choices */}
           {conversationChoices.map((choice, index) => (
             <Button
               key={index}
