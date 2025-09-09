@@ -2,6 +2,9 @@
 
 A modern, customizable AI chatbot built with Next.js, Vercel AI SDK, and Google Gemini. Features include rate limiting, bot protection, and a beautiful UI.
 
+![image](https://media.daily.dev/image/upload/s--rCj9f_I8--/f_auto/v1757194652/ugc/content_cb9613e4-dc85-4e49-9070-8fa4cf96299b?_a=BAMClqZW0)
+
+
 ## 🚀 Quick Start
 
 ### 1. Clone and Install
