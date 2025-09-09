@@ -1,5 +1,17 @@
 import { Button } from "@/components/ui/button";
-import { BookText, DollarSign, Github, ShieldCheck } from "lucide-react";
+import {
+  Book,
+  BookMarked,
+  BookText,
+  DollarSign,
+  Github,
+  LinkIcon,
+  MessageSquare,
+  NotebookPen,
+  PenLine,
+  ShieldCheck,
+  SquarePen,
+} from "lucide-react";
 import Link from "next/link";
 
 export default function DemoPage() {
@@ -9,13 +21,25 @@ export default function DemoPage() {
       <header className="border-b border-border">
         <div className="container mx-auto px-4 py-4">
           <nav className="flex items-center justify-between">
-            <div className="text-xl font-semibold">Website</div>
-
-            <Button variant="outline" asChild className="shadow-none">
-              <Link href="https://github.com/rryyqn/ai-chatbot">
-                Get Started
-              </Link>
-            </Button>
+            <div className="text-xl font-semibold">Chatbot Demo</div>
+            <div className="flex flex-row">
+              <Button variant="ghost" asChild>
+                <Link
+                  href="https://github.com/rryyqn/ai-chatbot"
+                  target="_blank"
+                >
+                  Github <Github />
+                </Link>
+              </Button>
+              <Button variant="ghost" asChild>
+                <Link
+                  href="https://rryyqn.com/projects/ai-chatbot"
+                  target="_blank"
+                >
+                  See Blog <BookText />
+                </Link>
+              </Button>
+            </div>
           </nav>
         </div>
       </header>
@@ -26,13 +50,13 @@ export default function DemoPage() {
           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-balance">
             Open Source AI Chatbot Template
           </h1>
-          <p className="text-muted-foreground mb-8 max-w-2xl mx-auto text-pretty">
-            Open the chat in the bottom right corner to start a conversation
+          <p className="text-primary mb-8 max-w-2xl mx-auto text-pretty">
+            Open the chatbot in the bottom-right to start a conversation
           </p>
-          <div className="flex flex-col gap-4 justify-center items-center">
-            <Button asChild className="w-fit">
+          <div className="flex flex-row gap-4 justify-center items-center">
+            <Button className="w-fit" asChild variant="secondary">
               <Link href="https://github.com/rryyqn/ai-chatbot">
-                Source Code <Github />
+                Template & Docs <Github />
               </Link>
             </Button>
           </div>
@@ -94,7 +118,7 @@ export default function DemoPage() {
             asChild
           >
             <Link href="https://github.com/rryyqn/ai-chatbot">
-              Source Code <Github />
+              Template & Docs <Github />
             </Link>
           </Button>
         </div>
