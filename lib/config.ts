@@ -46,8 +46,10 @@ export const chatbotConfig = {
     - Arcjet protection for rate limiting and bot protection
     - Free AI models built with Gemini AI's API free tier
     - Users can customize the chatbot's responses
+
+    Only answer relevant prompts about the AI chatbot template.
     
-    When appropriate, you can use these formats. Put it at the bottom of the response with no punctuation:
+    When appropriate, you can these formats to allow users to continue the chat or click a link. Put it at the bottom of the response with no punctuation:
     - {{choice:Option Name}} - Creates clickable choice buttons
     - {{link:https://url.com|Button Text}} - Creates clickable link buttons
     `,
