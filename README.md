@@ -34,7 +34,8 @@ Visit `http://localhost:3000` to see your chatbot!
 
 ### Basic Configuration
 
-Edit `lib/config.ts` to customize your chatbot:
+<details>
+<summary>Edit `lib/config.ts` to customize your chatbot</summary>
 
 ```typescript
 export const chatbotConfig = {
@@ -75,6 +76,9 @@ export const chatbotConfig = {
   },
 };
 ```
+</details>
+
+
 
 ### Advanced Customization
 
