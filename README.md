@@ -1,9 +1,20 @@
+
+
 # AI Chatbot Template
 
 A modern, customizable AI chatbot built with Next.js, Vercel AI SDK, and Google Gemini. Features include rate limiting, bot protection, and a beautiful UI.
 
-![image](https://media.daily.dev/image/upload/s--rCj9f_I8--/f_auto/v1757194652/ugc/content_cb9613e4-dc85-4e49-9070-8fa4cf96299b?_a=BAMClqZW0)
+<img width="960" height="540" alt="ai-chatbot" src="https://github.com/user-attachments/assets/d96cc13b-f675-41d6-b955-1335484e1e43" />
 
+## Table of Contents
+
+1. 🚀 [Quick Start](#-quick-start)
+2. ⚙️ [Customization](#%EF%B8%8F-customization)
+3. 🎨 [UI Customization](#-ui-customization)
+4. 🔧 [Technical Details](#-technical-details)
+5. 🚀 [Deployment](#-deployment)
+6. 🛠️ [Troubleshooting](#-troubleshooting)
+7. 📝 [License](#-license)
 
 ## 🚀 Quick Start
 
@@ -19,8 +30,15 @@ pnpm install
 
 Create a .env.local and add your API keys:
 
+```bash
+ARCJET_KEY=
+GOOGLE_GENERATIVE_AI_API_KEY=
+NEXT_PUBLIC_APP_URL=localhost
+```
+
 - `ARCJET_KEY` - Get from [Arcjet Dashboard](https://app.arcjet.com)
 - `GOOGLE_GENERATIVE_AI_API_KEY` - Get from [Google AI Studio](https://aistudio.google.com/app/apikey)
+- `NEXT_PUBLIC_APP_URL` - Use `localhost` for local development, use deployed url in production (eg. `https://ai-chatbot.vercel.app`)
 
 ### 3. Run Development Server
 
@@ -32,82 +50,55 @@ Visit `http://localhost:3000` to see your chatbot!
 
 ## ⚙️ Customization
 
-### Basic Configuration
+Edit <code>lib/config.ts</code> to customize your chatbot.
 
-<details>
-<summary>Edit `lib/config.ts` to customize your chatbot</summary>
+### Basic Information
 
-```typescript
-export const chatbotConfig = {
-  // Basic info
-  name: "Your AI Assistant",
-  
-  // Welcome message (supports {{choice:}} and {{link:}} syntax)
-  welcomeMessage: "Hello! How can I help you today?",
-  
-  // UI customization
-  ui: {
-    windowTitle: "Your Assistant",
-    inputPlaceholder: "Type your message...",
-    avatarImage: "/your-avatar.png",
-    avatarFallback: "AI",
-  },
-  
-  // Rate limiting
-  rateLimit: {
-    capacity: 10,        // Bucket maximum capacity
-    refillRate: 2,       // Tokens refilled per interval
-    interval: 10,        // Refill interval in seconds
-    minTimeBetweenMessages: 1000, // Min ms between messages
-    maxMessageLength: 1000,       // Max characters per message
-  },
-  
-  // AI configuration
-  api: {
-    model: "gemini-2.5-flash-lite",
-    systemPrompt: "You are a helpful AI assistant...",
-  },
-  
-  // Security settings
-  security: {
-    enableBotDetection: true,
-    enableShield: true,
-    allowedBots: [], // Empty array blocks all bots
-  },
-};
+`name` - Chatbot name
+
+`welcomeMessage` - Initial message in the chat (supports choice and link syntax)
+
+`ui.windowTitle` - Chat window title text
+
+`ui.inputPlaceholder` - Placeholder text for message input
+
+`ui.avatarImage` - AI's avatar image (place in public folder)
+
+`ui.avatarFallback` - Fallback avatar image placeholder
+
+### Rate Limiting
+
+`rateLimit.capacity` - Maximum requests allowed in a burst
+
+`rateLimit.refillRate` - How many tokens are added per interval
+
+`rateLimit.interval` - How often tokens are refilled (in seconds)
+
+### AI SDK API
+`api.model` - AI model from Gemini
+
+`api.systemPrompt` - system instruction for AI response (supports choice and link syntax)
+
+
+### Security Settings
+
+`enableBotDetection` - Block automated bots
+
+`enableShield` - Protect against common attacks
+
+`allowedBots` - Specify which bot categories to allow
+
+### What is the choice/link syntax?
+
+The choice and link syntax renders the interactive buttons at the bottom of AI response. These can be used by the AI for conversation flows, creating quick response suggestions and links to relevant resources. 
+
+Use this in your system prompt:
+
 ```
-</details>
-
-
-
-### Advanced Customization
-
-#### Custom System Prompt
-
-Modify the `systemPrompt` in `lib/config.ts` to change how your AI behaves:
-
-```typescript
-systemPrompt: `You are a customer service assistant for [Your Company]. 
-Be helpful, professional, and friendly. When appropriate, use:
-- {{choice:Option Name}} for clickable choices
-- {{link:https://url.com|Button Text}} for external links`
+When appropriate, you can these formats to allow users to continue the chat or click a link. Put it at the bottom of the response with no punctuation:
+    - {{choice:Option Name}} - Creates clickable choice buttons
+    - {{link:https://url.com|Button Text}} - Creates clickable link buttons
 ```
-
-#### Rate Limiting
-
-Adjust rate limiting in `lib/config.ts`:
-
-- **capacity**: Maximum requests allowed in a burst
-- **refillRate**: How many tokens are added per interval
-- **interval**: How often tokens are refilled (in seconds)
-
-#### Security Settings
-
-Configure security features:
-
-- **enableBotDetection**: Block automated bots
-- **enableShield**: Protect against common attacks
-- **allowedBots**: Specify which bot categories to allow
 
 ## 🎨 UI Customization
 
@@ -117,10 +108,6 @@ The chatbot uses Tailwind CSS. Key styling files:
 - `app/globals.css` - Global styles and theme
 - `components/ui/` - Reusable UI components
 - `components/Chatbot.tsx` - Direct chatbot styles
-
-### Avatar
-
-Place your avatar image in the public folder and update the path in in `lib/config.ts`.
 
 ## 🔧 Technical Details
 
@@ -176,19 +163,20 @@ The app works on any platform that supports Next.js:
 - Render
 - DigitalOcean App Platform
 
+## 🛠️ Troubleshooting
+
+**Q: I’m getting auth errors from Google AI / Arcjet**
+
+A: Confirm keys are correct and not expired. Verify the correct environment variables are set in your environment/hosting provider.
+
+**Q: I'm getting 403 forbidden errors**
+
+A: Set the `NEXT_PUBLIC_APP_URL` in your `.env` to your deployed URL, eg. `ai-chatbot.vercel.app`
+
+
 ## 📝 License
 
 MIT License - feel free to use this template for your projects!
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📞 Support
-
-If you have questions or need help:
-- Open an issue on GitHub
-- Review the example configuration
 
 ---
 
