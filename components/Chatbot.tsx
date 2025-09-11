@@ -17,6 +17,7 @@ import {
   PromptInputTextarea,
 } from "./ai-elements/prompt-input";
 import { chatbotConfig } from "@/lib/config";
+import { Profanity } from "@2toad/profanity";
 
 type ErrorMessage = {
   error: Error;
@@ -73,6 +74,7 @@ export const ChatBot = ({ onClose }: { onClose: () => void }) => {
   const [rateLimitCountdown, setRateLimitCountdown] = useState<number | null>(
     null
   );
+  const [validationError, setValidationError] = useState<string | null>(null);
   const lastMessageTime = useRef(Date.now());
 
   const { messages, sendMessage, setMessages, status } = useChat({
@@ -89,7 +91,24 @@ export const ChatBot = ({ onClose }: { onClose: () => void }) => {
       },
     ],
     onError: (error) => {
-      // Check for rate limiting (429 status code)
+      setValidationError(null);
+
+      // Check for validation error (400 status)
+      const isValidationError =
+        (error as unknown as ErrorMessage).status === 400 ||
+        (error as unknown as ErrorMessage).statusCode === 400 ||
+        error.message?.includes("400") ||
+        error.message?.toLowerCase().includes("invalid or suspicious");
+
+      if (isValidationError) {
+        setValidationError(
+          "Message blocked (inappropriate content, spam, or exceeding length)"
+        );
+        setTimeout(() => setValidationError(null), 5000);
+        return;
+      }
+
+      // Check for rate limiting
       const isRateLimit =
         (error as unknown as ErrorMessage).status === 429 ||
         (error as unknown as ErrorMessage).statusCode === 429 ||
@@ -106,22 +125,64 @@ export const ChatBot = ({ onClose }: { onClose: () => void }) => {
           setRateLimitCountdown(null);
         }, chatbotConfig.rateLimit.interval * 1000);
       } else {
-        // Handle other errors
+        // Other errors
         setRateLimitCountdown(5);
         setTimeout(() => setRateLimitCountdown(null), 5000);
       }
     },
   });
 
+  // Load chat history on component mount
+  useEffect(() => {
+    try {
+      const savedMessages = localStorage.getItem("AIChatMessages");
+      if (savedMessages) {
+        const parsedMessages = JSON.parse(savedMessages);
+        // Load if there are messages (excludes welcome msg)
+        if (parsedMessages.length > 1) {
+          setMessages(parsedMessages);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to load chat history:", error);
+      localStorage.removeItem("AIChatMessages");
+    }
+  }, [setMessages]);
+
+  // Save chat history whenever messages change
+  useEffect(() => {
+    try {
+      // Save if there are messages (excludes welcome msg)
+      if (messages.length > 1) {
+        localStorage.setItem("AIChatMessages", JSON.stringify(messages));
+      }
+    } catch (error) {
+      console.error("Failed to save chat history:", error);
+    }
+  }, [messages]);
+
+  const validateMessage = (text: string): boolean => {
+    const profanity = new Profanity();
+    profanity.addWords(["casino", "gambling", "poker", "bet"]);
+    profanity.removeWords([""]); // remove words from filter if needed, current list at https://github.com/2Toad/Profanity/blob/main/src/data/profane-words.ts
+
+    return (
+      text.length <= 1000 && !/(.)\1{6,}/i.test(text) && !profanity.exists(text)
+    );
+  };
+
   const sendMessageWithThrottle = async (text: string) => {
     const now = Date.now();
     const timeSinceLastMessage = now - lastMessageTime.current;
-    // Prevent spam (minimum time between messages)
     if (timeSinceLastMessage < chatbotConfig.rateLimit.minTimeBetweenMessages) {
       return;
     }
-    // Don't send if rate limited
     if (isRateLimited) {
+      return;
+    }
+    if (!validateMessage(text)) {
+      setValidationError("Message blocked - inappropriate/spam");
+      setTimeout(() => setValidationError(null), 5000);
       return;
     }
     lastMessageTime.current = now;
@@ -155,9 +216,11 @@ export const ChatBot = ({ onClose }: { onClose: () => void }) => {
   };
 
   const clearMessages = () => {
-    // Clear all error and rate limit state when resetting chat
     setIsRateLimited(false);
     setRateLimitCountdown(null);
+
+    localStorage.removeItem("AIChatMessages");
+
     setMessages([
       {
         id: "welcome",
@@ -194,8 +257,16 @@ export const ChatBot = ({ onClose }: { onClose: () => void }) => {
             md:max-w-110 md:w-full md:h-140 md:bottom-20 md:right-4 md:rounded-sm md:border md:inset-auto
           `}
     >
-      {isRateLimited && (
+      {/* Validation Error Display */}
+      {validationError && (
         <div className="text-red-700 rounded text-xs absolute bottom-16 w-full text-center z-10 bg-red-50 px-2 py-1">
+          {validationError}
+        </div>
+      )}
+
+      {/* Rate Limit Display */}
+      {isRateLimited && (
+        <div className="text-orange-700 rounded text-xs absolute bottom-16 w-full text-center z-10 bg-orange-50 px-2 py-1">
           {getRateLimitMessage()}
         </div>
       )}

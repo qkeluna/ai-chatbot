@@ -3,49 +3,28 @@ import { streamText, UIMessage, convertToModelMessages } from "ai";
 import { aj, getRateLimitHeaders } from "@/lib/arcjet";
 import { chatbotConfig } from "@/lib/config";
 import { headers } from "next/headers";
+import { Profanity } from "@2toad/profanity";
 
-// Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
-// Content validation
+const profanity = new Profanity();
+profanity.addWords(["casino", "gambling", "poker", "bet"]);
+profanity.removeWords([""]); // remove words from filter if needed, current list at https://github.com/2Toad/Profanity/blob/main/src/data/profane-words.ts
+
+// content validation (disallow empty msg, urls, spam, and profanity)
 const validateMessages = (messages: UIMessage[]): boolean => {
-  if (!messages || !Array.isArray(messages) || messages.length === 0) {
-    return false;
-  }
+  if (!messages?.length) return false;
 
-  // Check total length - UIMessage uses different structure
-  const totalLength = messages.reduce((acc, msg) => {
-    // UIMessage can have different content structures
-    let content = "";
-    if ("text" in msg && typeof msg.text === "string") {
-      content = msg.text;
-    } else if ("content" in msg && typeof msg.content === "string") {
-      content = msg.content;
-    }
-    return acc + content.length;
-  }, 0);
+  // Validate last message
+  const lastMessage = messages[messages.length - 1];
+  if (lastMessage.role !== "user") return true;
 
-  if (totalLength > 10000) {
-    // 10k character limit
-    return false;
-  }
-
-  // Check for spam patterns
-  const spamPatterns = [
-    /http[s]?:\/\//i, // Block URLs in messages
-    /viagra|casino|crypto|bitcoin/i,
-    /(.)\1{10,}/i, // Repeated characters
-  ];
-
-  return !messages.some((msg) => {
-    let content = "";
-    if ("text" in msg && typeof msg.text === "string") {
-      content = msg.text;
-    } else if ("content" in msg && typeof msg.content === "string") {
-      content = msg.content;
-    }
-    return spamPatterns.some((pattern) => pattern.test(content));
-  });
+  const content = JSON.stringify(lastMessage);
+  return (
+    content.length <= 1000 &&
+    !/(.)\1{6,}/i.test(content) &&
+    !profanity.exists(content)
+  );
 };
 
 export async function POST(req: Request) {
